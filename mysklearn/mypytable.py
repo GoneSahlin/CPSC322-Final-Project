@@ -180,10 +180,13 @@ class MyPyTable:
         """Remove rows from the table data that contain a missing value ("NA").
         """
         for index, row in reversed(list(enumerate(self.data))):
-            for val in row:
-                if val == 'NA':
-                    self.data.pop(index)
-                    break
+            if len(row) != len(self.column_names):
+                self.data.pop(index)
+            else:
+                for val in row:
+                    if val == 'NA':
+                        self.data.pop(index)
+                        break
 
     def replace_missing_values_with_column_average(self, col_name):
         """For columns with continuous data, fill missing values in a column
