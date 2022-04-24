@@ -2,7 +2,7 @@
 """
 
 import numpy as np
-from tabulate import tabulate
+#from tabulate import tabulate
 
 from mysklearn.mypytable import MyPyTable
 
@@ -194,4 +194,8 @@ def print_confusion_matrix(confusion_matrix, labels):
     confusion_table.add_column('Total', totals)
     confusion_table.add_column('Recognition %', recognitions)
 
-    print(tabulate(confusion_table.data, headers=confusion_table.column_names))
+    #print(tabulate(confusion_table.data, headers=confusion_table.column_names))
+
+
+def get_median(values):
+    return values[len (values)//2]
