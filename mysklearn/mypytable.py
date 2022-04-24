@@ -180,11 +180,11 @@ class MyPyTable:
         """Remove rows from the table data that contain a missing value ("NA").
         """
         for index, row in reversed(list(enumerate(self.data))):
-            if len(row) != len(self.column_names):
+            if len(row) < len(self.column_names):
                 self.data.pop(index)
             else:
                 for val in row:
-                    if val == 'NA':
+                    if val == 'NA' or val == '':
                         self.data.pop(index)
                         break
 

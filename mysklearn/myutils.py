@@ -2,7 +2,7 @@
 """
 
 import numpy as np
-#from tabulate import tabulate
+from tabulate import tabulate
 
 from mysklearn.mypytable import MyPyTable
 
@@ -110,6 +110,14 @@ def tdidt(current_instances, available_attributes, previous_length, possible_val
     # group data by attribute domains (creates pairwise disjoint partitions)
     partitions, values = partition_instances(current_instances, attribute)
     # for each partition, repeat unless one of the following occurs (base case)
+
+    # CASE 3?
+    if len(partitions) < len(possible_values[attribute].items()):
+            column = [current_instances.data[i][-1] for i in range(len(current_instances.data))]
+            majority = mode(column)
+            att_node = ["Leaf", majority, len(current_instances.data), previous_length]
+            return att_node
+
     for i, partition in enumerate(partitions):
     #    CASE 1: all class labels of the partition are the same => make a leaf node
         if check_case_1(partition):
@@ -122,11 +130,11 @@ def tdidt(current_instances, available_attributes, previous_length, possible_val
             value_node = ["Value", values[i], ["Leaf", majority, len(partition.data), len(current_instances.data)]]
             att_node.append(value_node)
     #    CASE 3: no more instances to partition (empty partition) => backtrack and replace attribute node with majority vote leaf node
-        elif len(partitions) != len(possible_values[attribute].items()):
-            print("here")
-            column = [current_instances.data[i][-1] for i in range(len(current_instances.data))]
-            majority = mode(column)
-            att_node = ["Leaf", majority, len(current_instances.data), previous_length]
+        # elif len(partitions) < len(possible_values[attribute].items()):
+        #     print("here")
+        #     column = [current_instances.data[i][-1] for i in range(len(current_instances.data))]
+        #     majority = mode(column)
+        #     att_node = ["Leaf", majority, len(current_instances.data), previous_length]
         else:
             val_node = tdidt(partition, available_attributes.copy(), len(current_instances.data), possible_values)
             att_node.append(["Value", values[i], val_node])
@@ -194,7 +202,7 @@ def print_confusion_matrix(confusion_matrix, labels):
     confusion_table.add_column('Total', totals)
     confusion_table.add_column('Recognition %', recognitions)
 
-    #print(tabulate(confusion_table.data, headers=confusion_table.column_names))
+    print(tabulate(confusion_table.data, headers=confusion_table.column_names))
 
 
 def get_median(values):

@@ -1,3 +1,6 @@
+Data/beer_reviews.csv
+mysklearn/__pycache__/
+
 # GS added
 .DS_Store
 .vscode
