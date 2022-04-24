@@ -1,5 +1,7 @@
 Data/beer_reviews.csv
 mysklearn/__pycache__/
+api_key.txt
+api_test.py
 
 # GS added
 .DS_Store

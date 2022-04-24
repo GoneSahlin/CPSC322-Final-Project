@@ -2,7 +2,7 @@ import os
 import utils
 from mysklearn.mypytable import MyPyTable
 
-fpath = os.path.join("beer_reviews.csv")
+fpath = os.path.join("Data", "beer_reviews.csv")
 table = MyPyTable().load_from_file(fpath)
 
 print("loaded")
@@ -35,4 +35,4 @@ for group in groups.values():
     row.append(val)
     cleaned_table.data.append(row)
 
-cleaned_table.save_to_file("beer_reviews_cleaned.csv")
+# cleaned_table.save_to_file("beer_reviews_cleaned.csv")

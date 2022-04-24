@@ -114,7 +114,7 @@ class MyPyTable:
             First row of CSV file is assumed to be the header.
             Calls convert_to_numeric() after load
         """
-        with open(filename, 'r') as file:
+        with open(filename, 'r', encoding="utf8") as file:
             reader = csv.reader(file)
 
             self.data = []
@@ -135,7 +135,7 @@ class MyPyTable:
         Notes:
             Use the csv module.
         """
-        with open(filename, 'w', newline = '') as file:
+        with open(filename, 'w', newline = '', encoding="utf8") as file:
             writer = csv.writer(file)
 
             writer.writerow(self.column_names)
