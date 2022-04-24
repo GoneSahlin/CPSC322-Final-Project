@@ -396,13 +396,23 @@ class MyDecisionTreeClassifier:
         for i in range(len(train[0])):
             self.header.append("att" + str(i))
         train_table = MyPyTable(self.header, train)
+
+        # find all possible values for each attribute
+        possible_values = {}
+        for attribute in self.header:
+            possible_values[attribute] = {}
+        for row in X_train:
+            for index, value in enumerate(row):
+                if value not in possible_values[self.header[index]]:
+                    possible_values[self.header[index]][value] = True
+
         # next, make a copy of your header... tdidt() is going
         # to modify the list
-
         available_attributes = self.header.copy()
         available_attributes.pop(-1)  # never split on class attribute
+
         # also: recall that python is pass by object reference
-        self.tree = myutils.tdidt(train_table, available_attributes, len(train_table.data))
+        self.tree = myutils.tdidt(train_table, available_attributes, len(train_table.data), possible_values)
 
     def predict(self, X_test):
         """Makes predictions for test instances in X_test.
