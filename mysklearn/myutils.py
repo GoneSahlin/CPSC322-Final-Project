@@ -100,7 +100,7 @@ def mode(values):
     max_keys.sort()
     return max_keys[0]
 
-def tdidt(current_instances, available_attributes, previous_length):
+def tdidt(current_instances, available_attributes, previous_length, possible_values):
     # basic approach (uses recursion!!):
 
     # select an attribute to split on
@@ -122,13 +122,13 @@ def tdidt(current_instances, available_attributes, previous_length):
             value_node = ["Value", values[i], ["Leaf", majority, len(partition.data), len(current_instances.data)]]
             att_node.append(value_node)
     #    CASE 3: no more instances to partition (empty partition) => backtrack and replace attribute node with majority vote leaf node
-        elif len(partition.data) == 0:
+        elif len(partitions) != len(possible_values[attribute].items()):
             print("here")
             column = [current_instances.data[i][-1] for i in range(len(current_instances.data))]
             majority = mode(column)
-            att_node = ["Lelf", majority, len(current_instances.data), previous_length]
+            att_node = ["Leaf", majority, len(current_instances.data), previous_length]
         else:
-            val_node = tdidt(partition, available_attributes.copy(), len(current_instances.data))
+            val_node = tdidt(partition, available_attributes.copy(), len(current_instances.data), possible_values)
             att_node.append(["Value", values[i], val_node])
     return att_node
 
