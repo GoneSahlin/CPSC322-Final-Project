@@ -180,30 +180,5 @@ def tdidt_print(tree, attribute_names, class_name, header, rule):
         new_rule = rule + attribute_names[att_index] + " == " + str(value_list[1]) + " AND "
         tdidt_print(value_list[2], attribute_names, class_name, header, new_rule)
 
-def print_confusion_matrix(confusion_matrix, labels):
-    """Prints out the confusion matrix nicely
-    """
-    headers = ['']
-    headers.extend(labels)
-    headers.extend(['Total', 'Recognition (%)'])
-
-    # create index
-    confusion_table = MyPyTable(column_names=labels, data=confusion_matrix)
-    confusion_table.add_column('', labels, 0)
-
-    # calculate total and recognition
-    totals = []
-    recognitions = []
-    for i, row in enumerate(confusion_table.data):
-        total = sum(row[1:11])
-        totals.append(total)
-        recognitions.append(round(row[i+1] / total * 100) if total != 0 else 0)
-
-    confusion_table.add_column('Total', totals)
-    confusion_table.add_column('Recognition %', recognitions)
-
-    print(tabulate(confusion_table.data, headers=confusion_table.column_names))
-
-
 def get_median(values):
     return values[len (values)//2]

@@ -407,15 +407,15 @@ class MyPyTable:
         Returns:
             MyPyTable: the new table with columns corresponding to col_identifiers
         """
-        if index is None:
-            if self.data:
-                index=len(self.data[0])
-            else:
-                index=0
-
-        self.column_names.insert(index, col_name)
+        if index is not None :
+            self.column_names.insert(index, col_name)
+        else:
+            self.column_names.append(col_name)
         for i, row in enumerate(self.data):
-            row.insert(index, column[i])
+            if index is not None:
+                row.insert(index, column[i])
+            else:
+                row.append(column[i])
 
     def get_column_index(self, col_name):
         return self.column_names.index(col_name)

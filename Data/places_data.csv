@@ -1,4 +1,4 @@
-brewery_name, address, price_level, rating
+brewery_name,brewery_address,brewery_price_level,brewery_rating
 Vecchio Birraio,"Via Caselle, 87, 35010 Campo San Martino PD, Italy",,4.3
 Caldera Brewing Company,"590 Clover Ln, Ashland, OR 97520, United States",2.0,4.3
 Amstel Brouwerij B. V.,"7848 AH Schoonoord, Netherlands",,0.0
