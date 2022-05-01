@@ -21,9 +21,6 @@ def compute_euclidean_distance(v1, v2):
     return np.sqrt(sum(dists))
 
 def select_attribute(instances, attributes):
-    # TODO: use entropy to compute and choose the attribute
-    # with the smallest Enew
-    # for now, we will just choose randomly
     weighted_entropies = []
     for attribute in attributes:
         col_index = instances.get_column_index(attribute)
@@ -182,3 +179,92 @@ def tdidt_print(tree, attribute_names, class_name, header, rule):
 
 def get_median(values):
     return values[len (values)//2]
+
+def compute_bootstrapped_sample(table):
+    n = len(table)
+    sample = []
+    for _ in range(n):
+        rand_index = np.random.randint(0, n) # Return random integers from low (inclusive) to high (exclusive)
+        sample.append(rand_index)
+    return sample
+
+def compute_random_subset(values, num_values):
+    values_copy = values[:] # shallow copy
+    np.random.shuffle(values_copy) # in place
+    return values_copy[:num_values]
+
+def select_attribute_forest(instances, attributes, F):
+    weighted_entropies = []
+
+    f_attributes = compute_random_subset(attributes, F)
+
+    for attribute in attributes:
+        col_index = instances.get_column_index(attribute)
+        counts = {}
+        p_dict = {}
+        for row in instances.data:
+            value = row[col_index]
+            y_value = row[-1]
+            if value not in counts:
+                counts[value] = 1
+            else:
+                counts[value] += 1
+            if value not in p_dict:
+                p_dict[value] = {}
+            if y_value not in p_dict[value]:
+                p_dict[value][y_value] = 1
+            else:
+                p_dict[value][y_value] += 1
+
+        addends = []
+        for value, count in counts.items():
+            entropy_addends = []
+            for y_value, y_count in p_dict[value].items():
+                entropy_addends.append(y_count / count * np.log2(y_count / count))
+            entropy = -sum(entropy_addends)
+            addends.append(count / len(instances.data) * entropy)
+        weighted_entropy = sum(addends)
+        weighted_entropies.append(weighted_entropy)
+
+    min_index = weighted_entropies.index(min(weighted_entropies))
+    return attributes[min_index]
+
+def tdidt_forest(current_instances, available_attributes, previous_length, possible_values, F):
+    # basic approach (uses recursion!!):
+
+    # select an attribute to split on
+    attribute = select_attribute_forest(current_instances, available_attributes, F)
+    available_attributes.remove(attribute)
+    att_node = ["Attribute", attribute]
+    # group data by attribute domains (creates pairwise disjoint partitions)
+    partitions, values = partition_instances(current_instances, attribute)
+    # for each partition, repeat unless one of the following occurs (base case)
+
+    # CASE 3?
+    if len(partitions) < len(possible_values[attribute].items()):
+            column = [current_instances.data[i][-1] for i in range(len(current_instances.data))]
+            majority = mode(column)
+            att_node = ["Leaf", majority, len(current_instances.data), previous_length]
+            return att_node
+
+    for i, partition in enumerate(partitions):
+    #    CASE 1: all class labels of the partition are the same => make a leaf node
+        if check_case_1(partition):
+            val_node = ["Value", values[i], ["Leaf", partition.data[0][-1], len(partition.data), len(current_instances.data)]]
+            att_node.append(val_node)
+    #    CASE 2: no more attributes to select (clash) => handle clash w/majority vote leaf node
+        elif len(available_attributes) == 0:
+            column = [partition.data[i][-1] for i in range(len(partition.data))]
+            majority = mode(column)
+            value_node = ["Value", values[i], ["Leaf", majority, len(partition.data), len(current_instances.data)]]
+            att_node.append(value_node)
+    #    CASE 3: no more instances to partition (empty partition) => backtrack and replace attribute node with majority vote leaf node
+        # elif len(partitions) < len(possible_values[attribute].items()):
+        #     print("here")
+        #     column = [current_instances.data[i][-1] for i in range(len(current_instances.data))]
+        #     majority = mode(column)
+        #     att_node = ["Leaf", majority, len(current_instances.data), previous_length]
+        else:
+            val_node = tdidt(partition, available_attributes.copy(), len(current_instances.data), possible_values)
+            att_node.append(["Value", values[i], val_node])
+    return att_node

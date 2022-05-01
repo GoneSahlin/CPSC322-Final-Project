@@ -463,3 +463,125 @@ class MyDecisionTreeClassifier:
             You will need to install graphviz in the Docker container as shown in class to complete this method.
         """
         pass # TODO: (BONUS) fix this
+
+
+class MyRandomForestClassifier:
+    """Represents a random forest classifier.
+
+    Attributes:
+        X_train(list of list of obj): The list of training instances (samples).
+                The shape of X_train is (n_train_samples, n_features)
+        y_train(list of obj): The target y values (parallel to X_train).
+            The shape of y_train is n_samples
+        tree(nested list): The extracted tree model.
+        M(int): The number of trees selected.
+        N(int): The total number of trees generated.
+        F(int): The number of randomly selected attributes to randomly split on.
+
+    Notes:
+        Loosely based on sklearn's DecisionTreeClassifier:
+            https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html
+        Terminology: instance = sample = row and attribute = feature = column
+    """
+    def __init__(self, M, N, F):
+        """Initializer for MyRandomForestClassifier.
+
+        Args:
+            M(int): The number of trees selected.
+            N(int): The total number of trees generated.
+            F(int): The number of randomly selected attributes to randomly split on.
+        """
+        self.X_train = None
+        self.y_train = None
+        self.M = M
+        self.N = N
+        self.F = F
+
+    def fit(self, X_train, y_train):
+        """Fits a random forest classifier to X_train and y_train
+
+        Args:
+            X_train(list of list of obj): The list of training instances (samples).
+                The shape of X_train is (n_train_samples, n_features)
+            y_train(list of obj): The target y values (parallel to X_train)
+                The shape of y_train is n_train_samples
+        """
+        self.X_train = X_train
+        self.y_train = y_train
+        self.trees = []
+
+        self.header = []
+        for i in range(len(X_train[0])):
+            self.header.append("att" + str(i))
+
+        # find all possible values for each attribute
+        possible_values = {}
+        for attribute in self.header:
+            possible_values[attribute] = {}
+        for row in X_train:
+            for index, value in enumerate(row):
+                if value not in possible_values[self.header[index]]:
+                    possible_values[self.header[index]][value] = True
+
+        tree_accuracies = []
+        # for each decision tree
+        for i in range(self.N):
+            sample = myutils.compute_bootstrapped_sample(self.X_train)
+            train = [self.X_train[index] +  [self.y_train[index]] for index in sample]
+
+            train_table = MyPyTable(self.header, train)
+            available_attributes = self.header.copy()
+            available_attributes.pop(-1)  # never split on class attribute
+
+            tree = myutils.tdidt_forest(train_table, available_attributes, len(train_table.data), possible_values, self.F)
+            self.trees.append(tree)
+
+            # test tree
+            validation = list(range(len(self.X_train)))
+            for index in sample:
+                if index in validation:
+                    validation.remove(index)
+
+            correct = 0  # number of validation instances predicted correctly
+            for index in validation:
+                X_instance = self.X_train[index]
+                y_instance = self.y_train[index]
+                y_pred = myutils.tdidt_predict(self.header, tree, X_instance)
+                if y_pred == y_instance:
+                    correct += 1
+
+            accuracy = correct / len(validation)
+            tree_accuracies.append(accuracy)
+
+        # find index of m highest accuracies
+        m_indexes = sorted(range(len(tree_accuracies)), key=lambda i: tree_accuracies[i], reverse=True)[:self.M]
+
+        # remove trees not selected
+        for i in range(len(self.trees) - 1, -1, -1):  # iterate backwards, so pop() doesn't affect next index
+            if i not in m_indexes:
+                self.trees.pop()
+
+
+    def predict(self, X_test):
+        """Makes predictions for test instances in X_test.
+
+        Args:
+            X_test(list of list of obj): The list of testing samples
+                The shape of X_test is (n_test_samples, n_features)
+
+        Returns:
+            y_predicted(list of obj): The predicted target y values (parallel to X_test)
+        """
+        y_predicted = []
+        for instance in X_test:
+            tree_predictions = {}
+            for tree in self.trees:
+                prediction = myutils.tdidt_predict(self.header, tree, instance)
+                if prediction in tree_predictions:
+                    tree_predictions[prediction] += 1
+                else:
+                    tree_predictions[prediction] = 1
+            majority_prediction = max(tree_predictions, key=tree_predictions.get)
+            y_predicted.append(majority_prediction)
+        return y_predicted
+
