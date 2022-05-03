@@ -4,7 +4,7 @@ from tabulate import tabulate
 
 
 def high_low_discretizer(val):
-    if val >= 3.5:
+    if val >= 4:
         return "high"
     return "low"
 
