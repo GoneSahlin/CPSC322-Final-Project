@@ -328,7 +328,8 @@ class MyNaiveBayesClassifier:
 
                 prob = 1
                 for i, x_label in enumerate(x):
-                    prob *= self.posteriors[i][x_label][y_label]
+                    if x_label in self.posteriors[i]:
+                        prob *= self.posteriors[i][x_label][y_label]
 
                 prob *= self.priors[y_label]
                 probs.append(prob)
