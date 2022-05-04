@@ -4,6 +4,7 @@ api_key.txt
 api_test.py
 join_test.py
 mytest.py
+*.un~
 
 # GS added
 .DS_Store
