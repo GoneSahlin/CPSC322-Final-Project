@@ -583,6 +583,8 @@ class MyRandomForestClassifier:
                 else:
                     tree_predictions[prediction] = 1
             majority_prediction = max(tree_predictions, key=tree_predictions.get)
+            if majority_prediction is None:
+                majority_prediction = prediction.keys()[0]
             y_predicted.append(majority_prediction)
         return y_predicted
 
