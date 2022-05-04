@@ -587,4 +587,3 @@ class MyRandomForestClassifier:
                 majority_prediction = prediction.keys()[0]
             y_predicted.append(majority_prediction)
         return y_predicted
-

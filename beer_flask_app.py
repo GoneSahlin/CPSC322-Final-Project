@@ -14,11 +14,11 @@ app = Flask(__name__)
 def index_page():
     prediction = ""
     if request.method == "POST":
-        level = request.form["level"]
-        lang = request.form["lang"]
-        tweets = request.form["tweets"]
-        phd = request.form["phd"]
-        prediction = predict_interviews_well([level, lang, tweets, phd])
+        beer_style = request.form["style"]
+        abv = request.form["abv"]
+        brewery_rating = request.form["brewery_rating"]
+        brewery_country = request.form["brewery_country"]
+        prediction = predict_interviews_well([beer_style, abv, brewery_rating, brewery_country])
     print("prediction:", prediction)
     # goes into templates folder and finds given name
     return render_template("index.html", prediction=prediction)
@@ -26,12 +26,12 @@ def index_page():
 
 @app.route('/predict', methods=["GET"])
 def predict():
-    level = request.args.get("level")
-    lang = request.args.get("lang")
-    tweets = request.args.get("tweets")
-    phd = request.args.get("phd")
+    beer_style = request.args.get("style")
+    abv = request.args.get("abv")
+    brewery_rating = request.args.get("brewery rating")
+    brewery_country = request.args.get("brewery country")
 
-    prediction = predict_interviews_well([level, lang, tweets, phd])
+    prediction = predict_interviews_well([beer_style, abv, brewery_rating, brewery_country])
     if prediction is not None:
         # success!
         result = {"prediction": prediction}
@@ -42,15 +42,20 @@ def predict():
 
 def predict_interviews_well(unseen_instance):
     # deserialize to object (unpickle)
-    infile = open("tree.p", "rb")
-    dt_clf = pickle.load(infile)
+    infile = open("classifier.p", "rb")
+    clf = pickle.load(infile)
     infile.close()
     try:
-        return dt_clf.predict(unseen_instance)
+        unseen_instance[1] = float(unseen_instance[1])
+        unseen_instance[3] = float(unseen_instance[3])
+
+        # unseen_instance = [['Hefeweizen', 5.0,'Italy',4.0],['IPA',7.0,'United States', 5.0]]
+        return clf.predict([unseen_instance])
+        # return unseen_instance
     except:
         return None
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5001))
     app.run(host='0.0.0.0', port=port, debug=False)

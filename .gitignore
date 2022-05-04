@@ -3,6 +3,7 @@ mysklearn/__pycache__/
 api_key.txt
 api_test.py
 join_test.py
+mytest.py
 
 # GS added
 .DS_Store

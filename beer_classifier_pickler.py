@@ -16,10 +16,10 @@ def create_classifier():
     X = table.get_columns(['beer_style', 'beer_abv', 'brewery_country', 'brewery_rating']).data
     y = table.get_column('rating')
 
-    dt_clf = MyRandomForestClassifier(M=5, N=10, F=2)
+    dt_clf = MyNaiveBayesClassifier()
     dt_clf.fit(X, y)
 
-    outfile = open("tree.p", "wb")
+    outfile = open("classifier.p", "wb")
     pickle.dump(dt_clf, outfile)
     outfile.close()
 
