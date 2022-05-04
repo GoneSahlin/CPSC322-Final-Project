@@ -49,7 +49,6 @@ def predict_interviews_well(unseen_instance):
         unseen_instance[1] = float(unseen_instance[1])
         unseen_instance[3] = float(unseen_instance[3])
 
-        # unseen_instance = [['Hefeweizen', 5.0,'Italy',4.0],['IPA',7.0,'United States', 5.0]]
         return clf.predict([unseen_instance])
         # return unseen_instance
     except:

@@ -72,7 +72,7 @@ class MyPyTable:
 
         column = []
         for row in self.data:
-            if row[col_index] or not include_missing_values:
+            if row[col_index] is not None or not include_missing_values:
                 column.append(row[col_index])
 
         return column
@@ -436,8 +436,8 @@ class MyPyTable:
     def drop_column(self, col_name):
         col_index = self.get_column_index(col_name)
 
-        if col_index:
-            if len(self.column_names) >0:
+        if col_index is not None:
+            if len(self.column_names) > 0:
                 self.column_names.pop(col_index)
 
             for row in self.data:
@@ -452,7 +452,7 @@ class MyPyTable:
         """
         Returns: a mypytable with only the value in the requested row
         """
-      
+
         if isinstance(col,str):
             col = self.column_names.index(col)
         mt = MyPyTable()
