@@ -452,7 +452,9 @@ class MyPyTable:
         """
         Returns: a mypytable with only the value in the requested row
         """
-
+      
+        if isinstance(col,str):
+            col = self.column_names.index(col)
         mt = MyPyTable()
 
         for row in self.data:
